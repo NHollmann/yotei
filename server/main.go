@@ -1,9 +1,13 @@
 package main
 
-import "os"
+import (
+	"github.com/NHollmann/yotei/controller"
+)
 
 func main() {
-	print("Hello ")
-	println("World")
-	println(os.Getenv("YOTEI_ADDR"))
+	var server controller.YoteiServer
+	server.Start("127.0.0.1:9000", controller.DatabaseConfig{
+		Driver:   "sqlite",
+		Database: "yotei.db",
+	})
 }

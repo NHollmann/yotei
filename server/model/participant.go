@@ -7,4 +7,5 @@ type Participant struct {
 	User    *User
 	EventID uint64
 	Event   Event
+	Choices []ParticipantChoice
 }

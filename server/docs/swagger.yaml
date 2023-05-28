@@ -1,0 +1,200 @@
+info:
+  contact: {}
+paths:
+  /event:
+    get:
+      description: Get all events based on permissions
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get all events
+      tags:
+      - Event
+    post:
+      description: Every user can create a new event
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Create a new event
+      tags:
+      - Event
+  /event/{accessKey}:
+    delete:
+      description: Only the creator and all administrators can delete an event
+      parameters:
+      - description: Event access key
+        in: path
+        name: accessKey
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Delete an event
+      tags:
+      - Event
+    get:
+      description: Can be used by anyone who haves the access key
+      parameters:
+      - description: Event access key
+        in: path
+        name: accessKey
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get one event
+      tags:
+      - Event
+    patch:
+      description: Everyone can update a participant except there is an user linked
+        to it
+      parameters:
+      - description: Event access key
+        in: path
+        name: accessKey
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Update a participant of the current event
+      tags:
+      - Event
+    post:
+      description: Everybody can use this route, if the user is logged in, the participant
+        will be linked to the user
+      parameters:
+      - description: Event access key
+        in: path
+        name: accessKey
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Add a participant to an existing event
+      tags:
+      - Event
+    put:
+      description: Only the creator and all administrators can update an event
+      parameters:
+      - description: Event access key
+        in: path
+        name: accessKey
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Update an event
+      tags:
+      - Event
+  /login:
+    post:
+      description: Login an existing user with a username and password
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Login user
+      tags:
+      - Authentication
+  /logout:
+    post:
+      description: Logout the current user
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Logout user
+      tags:
+      - Authentication
+  /user:
+    get:
+      description: Only works for administrators
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get all users
+      tags:
+      - User
+    post:
+      description: Only works for administrators
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Create a new user
+      tags:
+      - User
+  /user/{userId}:
+    delete:
+      description: Only works for administrators and the user itself
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Delete an user
+      tags:
+      - User
+    get:
+      description: Only works for administrators and the user itself
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get one user
+      tags:
+      - User
+    put:
+      description: Only works for administrators and the user itself
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Update an user
+      tags:
+      - User
+swagger: "2.0"

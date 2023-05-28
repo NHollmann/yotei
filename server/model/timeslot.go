@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type Day struct {
+type Timeslot struct {
 	ID      uint64 `gorm:"primaryKey"`
 	Date    time.Time
 	EventID uint64
