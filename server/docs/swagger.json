@@ -1,8 +1,21 @@
 {
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "title": "Yotei API",
+        "contact": {},
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "v1"
     },
+    "basePath": "/api/v1",
     "paths": {
         "/event": {
             "get": {
@@ -203,7 +216,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "type": "body"
                         }
                     }
                 }
@@ -214,11 +227,38 @@
                     "User"
                 ],
                 "summary": "Create a new user",
+                "parameters": [
+                    {
+                        "description": "Data for new user",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.handleUserCreate.userDataType"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User ID of newly created user",
                         "schema": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -262,13 +302,38 @@
                         "name": "userId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Data for updated user",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.handleUserUpdate.userDataType"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User ID of updated user",
                         "schema": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -295,6 +360,63 @@
                             "type": "string"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controller.handleUserCreate.userDataType": {
+            "type": "object",
+            "required": [
+                "name",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "isAdmin": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Max Mustermann"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "catsAreAwesome"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "mmustermann"
+                }
+            }
+        },
+        "controller.handleUserUpdate.userDataType": {
+            "type": "object",
+            "required": [
+                "name",
+                "username"
+            ],
+            "properties": {
+                "isAdmin": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Max Mustermann"
+                },
+                "passworChangeRequired": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "password": {
+                    "type": "string",
+                    "example": "catsAreAwesome"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "mmustermann"
                 }
             }
         }

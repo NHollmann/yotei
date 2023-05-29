@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/NHollmann/yotei/docs"
+	_ "github.com/NHollmann/yotei/docs"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -11,10 +11,11 @@ import (
 // @version v1
 // @Accept json
 // @Produce json
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
 func (s *YoteiServer) initRoutes() {
-	docs.SwaggerInfo.Title = "Yotei API"
-	docs.SwaggerInfo.BasePath = "/api/v1"
-	docs.SwaggerInfo.Version = "v1"
+
 	api := s.router.Group("/api/v1")
 	{
 		api.POST("/login", s.handleLogin)   // Login
@@ -35,5 +36,5 @@ func (s *YoteiServer) initRoutes() {
 		api.DELETE("/event/:accessKey", s.handleEventDelete)           // Delete
 	}
 
-	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.DeepLinking(false)))
 }

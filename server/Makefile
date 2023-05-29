@@ -8,7 +8,7 @@ help:
 	@echo "- run"
 
 openapi:
-	@go run github.com/swaggo/swag/cmd/swag@latest init
+	@go run github.com/swaggo/swag/cmd/swag@latest init -g controller/routes.go
 
 run:
 	@go run .
