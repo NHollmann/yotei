@@ -2,6 +2,18 @@ basePath: /api/v1
 consumes:
 - application/json
 definitions:
+  controller.handleEventCreate.eventDataType:
+    properties:
+      name:
+        example: Klickrausch
+        type: string
+      username:
+        example: 2
+        type: integer
+    required:
+    - name
+    - username
+    type: object
   controller.handleUserCreate.userDataType:
     properties:
       isAdmin:
@@ -42,6 +54,30 @@ definitions:
     - name
     - username
     type: object
+  controller.publicUser:
+    properties:
+      createdAt:
+        example: "2023-05-29T15:34:14.198515266+02:00"
+        type: string
+      id:
+        example: 17
+        type: integer
+      isAdmin:
+        example: false
+        type: boolean
+      name:
+        example: Mark Maximus
+        type: string
+      passwordChangeRequired:
+        example: false
+        type: boolean
+      updatedAt:
+        example: "2023-05-30T15:12:35.463734634+02:00"
+        type: string
+      username:
+        example: maximum
+        type: string
+    type: object
 info:
   contact: {}
   license:
@@ -63,6 +99,13 @@ paths:
       - Event
     post:
       description: Every user can create a new event
+      parameters:
+      - description: Data for new event
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.handleEventCreate.eventDataType'
       responses:
         "200":
           description: OK
@@ -98,9 +141,26 @@ paths:
         type: string
       responses:
         "200":
-          description: OK
+          description: Event
           schema:
-            type: string
+            properties:
+              event:
+                type: string
+            type: object
+        "400":
+          description: Error message
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Event not found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
       summary: Get one event
       tags:
       - Event
@@ -181,9 +241,21 @@ paths:
       description: Only works for administrators
       responses:
         "200":
-          description: OK
+          description: List of all users
           schema:
-            type: body
+            properties:
+              users:
+                items:
+                  $ref: '#/definitions/controller.publicUser'
+                type: array
+            type: object
+        "403":
+          description: Only admins can access the user list
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
       summary: Get all users
       tags:
       - User
@@ -225,9 +297,26 @@ paths:
         type: integer
       responses:
         "200":
-          description: OK
+          description: User ID of deleted user
           schema:
-            type: string
+            properties:
+              userId:
+                type: integer
+            type: object
+        "400":
+          description: Error message
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "403":
+          description: Only admins and the user itself can delete a user
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
       summary: Delete an user
       tags:
       - User
@@ -241,9 +330,33 @@ paths:
         type: integer
       responses:
         "200":
-          description: OK
+          description: User
           schema:
-            type: string
+            properties:
+              user:
+                $ref: '#/definitions/controller.publicUser'
+            type: object
+        "400":
+          description: Error message
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "403":
+          description: Only admins and the user itself can access a user
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
       summary: Get one user
       tags:
       - User

@@ -3,22 +3,48 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/NHollmann/yotei/model"
 	"github.com/gin-gonic/gin"
 )
 
+type publicUser struct {
+	ID                     uint      `json:"id" example:"17"`
+	CreatedAt              time.Time `json:"createdAt" example:"2023-05-29T15:34:14.198515266+02:00"`
+	UpdatedAt              time.Time `json:"updatedAt" example:"2023-05-30T15:12:35.463734634+02:00"`
+	Name                   string    `json:"name" example:"Mark Maximus"`
+	Username               string    `json:"username" example:"maximum"`
+	IsAdmin                bool      `json:"isAdmin" example:"false"`
+	PasswordChangeRequired bool      `json:"passwordChangeRequired" example:"false"`
+}
+
 // Get all users
 // @Summary Get all users
 // @Description Only works for administrators
 // @Tags User
-// @Success 200 body {string} hello
+// @Success 200 {object} object{users=[]publicUser} "List of all users"
+// @Failure 403 {object} object{error=string} "Only admins can access the user list"
 // @Router /user [get]
 func (server *YoteiServer) handleUserList(c *gin.Context) {
 
 	// TODO Check is admin
 
 	users := model.UserGetAll(server.db)
+
+	publicUsers := make([]publicUser, 0, len(users))
+	for _, u := range users {
+		publicUsers = append(publicUsers, publicUser{
+			ID:                     u.ID,
+			CreatedAt:              u.CreatedAt,
+			UpdatedAt:              u.UpdatedAt,
+			Name:                   u.Name,
+			Username:               u.Username,
+			IsAdmin:                u.IsAdmin,
+			PasswordChangeRequired: u.PasswordChangeRequired,
+		})
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"users": users,
 	})
@@ -29,7 +55,10 @@ func (server *YoteiServer) handleUserList(c *gin.Context) {
 // @Description Only works for administrators and the user itself
 // @Tags User
 // @Param userId path uint true "User ID"
-// @Success 200 {string} hello
+// @Success 200 {object} object{user=publicUser} "User"
+// @Failure 400 {object} object{error=string} "Error message"
+// @Failure 403 {object} object{error=string} "Only admins and the user itself can access a user"
+// @Failure 404 {object} object{error=string} "User not found"
 // @Router /user/{userId} [get]
 func (server *YoteiServer) handleUserGet(c *gin.Context) {
 
@@ -51,8 +80,17 @@ func (server *YoteiServer) handleUserGet(c *gin.Context) {
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"hello": user,
+		"user": publicUser{
+			ID:                     user.ID,
+			CreatedAt:              user.CreatedAt,
+			UpdatedAt:              user.UpdatedAt,
+			Name:                   user.Name,
+			Username:               user.Username,
+			IsAdmin:                user.IsAdmin,
+			PasswordChangeRequired: user.PasswordChangeRequired,
+		},
 	})
 }
 
@@ -93,6 +131,7 @@ func (server *YoteiServer) handleUserCreate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"userId": userId,
 	})
@@ -146,6 +185,7 @@ func (server *YoteiServer) handleUserUpdate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"userId": userId,
 	})
@@ -156,7 +196,9 @@ func (server *YoteiServer) handleUserUpdate(c *gin.Context) {
 // @Description Only works for administrators and the user itself
 // @Tags User
 // @Param userId path uint true "User ID"
-// @Success 200 {string} hello
+// @Success 200 {object} object{userId=integer} "User ID of deleted user"
+// @Failure 400 {object} object{error=string} "Error message"
+// @Failure 403 {object} object{error=string} "Only admins and the user itself can delete a user"
 // @Router /user/{userId} [delete]
 func (server *YoteiServer) handleUserDelete(c *gin.Context) {
 

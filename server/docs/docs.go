@@ -48,6 +48,17 @@ const docTemplate = `{
                     "Event"
                 ],
                 "summary": "Create a new event",
+                "parameters": [
+                    {
+                        "description": "Data for new event",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.handleEventCreate.eventDataType"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -76,9 +87,36 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Event",
                         "schema": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                                "event": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Event not found",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -223,9 +261,28 @@ const docTemplate = `{
                 "summary": "Get all users",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "List of all users",
                         "schema": {
-                            "type": "body"
+                            "type": "object",
+                            "properties": {
+                                "users": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/controller.publicUser"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Only admins can access the user list",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -291,9 +348,47 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User",
                         "schema": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                                "user": {
+                                    "$ref": "#/definitions/controller.publicUser"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Only admins and the user itself can access a user",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -364,9 +459,36 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User ID of deleted user",
                         "schema": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Only admins and the user itself can delete a user",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -374,6 +496,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controller.handleEventCreate.eventDataType": {
+            "type": "object",
+            "required": [
+                "name",
+                "username"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Klickrausch"
+                },
+                "username": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
         "controller.handleUserCreate.userDataType": {
             "type": "object",
             "required": [
@@ -426,6 +565,39 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "mmustermann"
+                }
+            }
+        },
+        "controller.publicUser": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string",
+                    "example": "2023-05-29T15:34:14.198515266+02:00"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 17
+                },
+                "isAdmin": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Mark Maximus"
+                },
+                "passwordChangeRequired": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "example": "2023-05-30T15:12:35.463734634+02:00"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "maximum"
                 }
             }
         }

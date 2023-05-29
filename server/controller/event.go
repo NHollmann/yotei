@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/NHollmann/yotei/model"
 	"github.com/gin-gonic/gin"
@@ -18,10 +17,11 @@ func (server *YoteiServer) handleEventList(c *gin.Context) {
 
 	// TODO Check is admin
 	// TODO Check if get params are set for user selection if admin
+	// TODO creatorId bekommen
 
-	users := model.UserGetAll(server.db)
+	events := model.EventGetAll(server.db, 0)
 	c.JSON(http.StatusOK, gin.H{
-		"users": users,
+		"events": events,
 	})
 }
 
@@ -30,28 +30,28 @@ func (server *YoteiServer) handleEventList(c *gin.Context) {
 // @Description Can be used by anyone who haves the access key
 // @Tags Event
 // @Param accessKey path string true "Event access key"
-// @Success 200 {string} hello
+// @Success 200 {object} object{event=string} "Event"
+// @Failure 400 {object} object{error=string} "Error message"
+// @Failure 404 {object} object{error=string} "Event not found"
 // @Router /event/{accessKey} [get]
 func (server *YoteiServer) handleEventGet(c *gin.Context) {
 
-	userIdStr := c.Param("userId")
-	userId, err := strconv.Atoi(userIdStr)
-	if err != nil {
+	accessKey := c.Param("accessKey")
+	if len(accessKey) != 10 {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "userId must be an integer",
+			"error": "accessKey must have a length of 10",
 		})
 		return
 	}
-
-	user, err := model.UserGetOne(server.db, uint(userId))
+	event, err := model.EventGetOne(server.db, accessKey)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"error": "userId not found",
+			"error": "accessKey not found",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"hello": user,
+		"event": event,
 	})
 }
 
@@ -59,15 +59,35 @@ func (server *YoteiServer) handleEventGet(c *gin.Context) {
 // @Summary Create a new event
 // @Description Every user can create a new event
 // @Tags Event
+// @Param request body controller.handleEventCreate.eventDataType true "Data for new event"
 // @Success 200 {string} hello
 // @Router /event [post]
 func (server *YoteiServer) handleEventCreate(c *gin.Context) {
 
 	// TODO Check is admin
+	type eventDataType struct {
+		Name   string `json:"name" binding:"required" example:"Klickrausch"`
+		UserID uint   `json:"username" binding:"required" example:"2"`
+	}
 
-	users := model.UserGetAll(server.db)
+	var eventData eventDataType
+	if err := c.ShouldBindJSON(&eventData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	eventName, err := model.EventCreate(
+		server.db,
+		eventData.Name,
+		eventData.UserID,
+	)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"users": users,
+		"event": eventName,
 	})
 }
 
@@ -98,10 +118,22 @@ func (server *YoteiServer) handleEventUpdate(c *gin.Context) {
 func (server *YoteiServer) handleEventDelete(c *gin.Context) {
 
 	// TODO Check is admin
+	accessKey := c.Param("accessKey")
+	if len(accessKey) != 10 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "accessKey must have a length of 10",
+		})
+		return
+	}
 
-	users := model.UserGetAll(server.db)
+	err := model.EventDelete(server.db, accessKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"users": users,
+		"event": accessKey,
 	})
 }
 
